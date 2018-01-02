@@ -1,15 +1,20 @@
 <template>
     <div>
+        <heading/>
         <router-view/>
     </div>
 </template>
 
 <script>
+    import Heading from './components/heading.vue'
     export default {
-        name: "app"
+        name: "app",
+        components: {
+            'heading': Heading
+        },
     }
 </script>
 
-<style scoped>
-
+<style lang="css">
+    @import '../node_modules/bulma/css/bulma.css';
 </style>

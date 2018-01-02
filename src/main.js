@@ -5,14 +5,18 @@ import axios from 'axios';
 import router from './router'
 import App from './App.vue';
 
+
 Vue.use(VueRouter);
 
 Vue.use(VueAxios, axios);
 
+Vue.prototype.$server = (path) => {
+    return 'http://localhost:4000/' + path
+}
 
 new Vue({
     el: '#app',
     router,
     template: '<App/>',
-    components: { App }
+    components: {App}
 })

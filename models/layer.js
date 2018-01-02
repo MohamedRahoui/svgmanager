@@ -6,6 +6,7 @@ const Schema = mongoose.Schema;
 let Layer = new Schema({
     name: String,
     items: {
+        type: Array,
         fill: String,
         stoke: String
     }
