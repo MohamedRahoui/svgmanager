@@ -15,6 +15,7 @@
     }
 </script>
 
-<style lang="css">
+<style lang="scss">
     @import '../node_modules/bulma/css/bulma.css';
+    @import './assets/style.scss';
 </style>
