@@ -16,7 +16,7 @@ Vue.use(VueAxios, axios);
 Vue.prototype.$server = (path) => {
     return 'http://localhost:4000/' + path
 }
-
+// JSX component
 Vue.component('shape', {
     props: {
         item: {type: Object, required: true},

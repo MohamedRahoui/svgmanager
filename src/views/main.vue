@@ -246,6 +246,7 @@
             this.fetchLayers()
         },
         methods: {
+            // Get layers filtered or not
             fetchLayers() {
                 if (this.filter) {
                     let url
@@ -268,6 +269,7 @@
                     });
                 }
             },
+            // Add a new layer
             addLayer() {
                 this.axios.post(this.$server('layers/add'), this.addForm).then((response) => {
                     this.addModal = false
@@ -279,6 +281,7 @@
                     this.fetchLayers()
                 })
             },
+            // SVG FILE HANDLING
             onAddFileChange(e) {
                 // Get file from input on file change
                 let files = e.target.files || e.dataTransfer.files;
@@ -322,6 +325,7 @@
                     })
                 })
             },
+            // Delete a layer
             delete_layer(layer) {
                 this.axios.get(this.$server('layers/delete/' + layer._id)).then(() => {
                     this.fetchLayers()
