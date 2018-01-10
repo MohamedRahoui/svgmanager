@@ -15,7 +15,7 @@
                     </label>
                 </header>
                 <div class="columns">
-                    <div class="column is-6">
+                    <div class="column is-5">
                         <br>
                         <div class="has-text-centered is-size-5">Colors</div>
                         <br>
@@ -37,7 +37,26 @@
                                   @click="colors.grey.selected = !colors.grey.selected">Grey</span>
                         </div>
                     </div>
-                    <div class="column is-6">
+                    <div class="column is-2">
+                        <br>
+                        <div class="field">
+                            <div class="control">
+                                <div class="select" style="width: 100%;">
+                                    <select style="width: 100%;" v-model="orAnd">
+                                        <option value="or">OR ||</option>
+                                        <option value="and">AND &&</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="field">
+                            <div class="control">
+                                <input type="number" class="input" placeholder="How much shapes ?" v-model="shapes_num" style="text-align: center">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column is-5">
                         <br>
                         <div class="has-text-centered is-size-5">Shapes</div>
                         <br>
@@ -127,6 +146,12 @@
             'card': Card
         },
         watch: {
+            shapes_num: function (val) {
+                this.fetchLayers()
+            },
+            orAnd: function (val) {
+                this.fetchLayers()
+            },
             filter: function (val) {
                 this.fetchLayers()
             },
@@ -141,10 +166,12 @@
                     this.fetchLayers()
                 },
                 deep: true
-            },
+            }
         },
         data() {
             return {
+                shapes_num: 0,
+                orAnd: 'or',
                 filter: false,
                 addModal: false,
                 svgFile: '',
@@ -221,10 +248,17 @@
         methods: {
             fetchLayers() {
                 if (this.filter) {
-                    this.axios.post(this.$server('layers/find'),
+                    let url
+                    if (this.orAnd === 'or') {
+                        url = this.$server('layers/find-or')
+                    } else {
+                        url = this.$server('layers/find')
+                    }
+                    this.axios.post(url,
                         {
                             shapes: this.filter_shapes,
                             colors: this.filter_colors,
+                            shapes_num: this.shapes_num
                         }).then((response) => {
                         this.Layers = response.data;
                     });
@@ -246,14 +280,20 @@
                 })
             },
             onAddFileChange(e) {
+                // Get file from input on file change
                 let files = e.target.files || e.dataTransfer.files;
                 if (!files.length) return;
                 this.svgFile = e.target.files[0];
+                // Create a fake url to access the file content with an http request
                 let url = URL.createObjectURL(e.target.files[0]);
                 this.axios.get(url).then(res => {
+                    // get the xml from the svg
                     let xml = $.parseXML(res.data);
+                    // get the tag g
                     let g = $(xml).find('g');
+                    // get children from the tag g exp 'ellipse, rect"
                     let items = g.children();
+                    // loop through the children and get the attributes
                     $.each(items, (index, item) => {
                         let item_data = {
                             style: {}
@@ -277,6 +317,7 @@
                         item.y2 ? item_data.y2 = item.y2.baseVal.value : item_data.y2 = '';
                         item.attributes.d && item.attributes.d.value ? item_data.d = item.attributes.d.value : item_data.d = '';
                         item.points ? item_data.points = item.points.baseVal.value : item_data.points = '';
+                        // put every thing in addForm that'll be used in addLayer() to create a layer
                         this.addForm.items.push(item_data)
                     })
                 })

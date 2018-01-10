@@ -28,13 +28,46 @@ layerRoutes.route('/delete/:id').get(function (req, res) {
     });
 });
 
-// Filter
+// Filter AND
 layerRoutes.route('/find').post(function (req, res) {
+    let filter
+    if (req.body.shapes_num > 0) {
+        if (req.body.shapes.length > 0 && req.body.colors.length > 0) {
+            filter = [
+                {'items': {"$elemMatch": {'nodeName': {$all: req.body.shapes}}}},
+                {'items': {$size: req.body.shapes_num}},
+                {'items': {"$elemMatch": {'style.fill': {$all: req.body.colors}}}},
+            ]
+        } else if (req.body.shapes.length > 0 && req.body.colors.length === 0) {
+            filter = [
+                {'items': {"$elemMatch": {'nodeName': {$all: req.body.shapes}}}},
+                {'items': {$size: req.body.shapes_num}},
+            ]
+        } else {
+            filter = [
+                {'items': {"$elemMatch": {'style.fill': {$all: req.body.colors}}}},
+                {'items': {$size: req.body.shapes_num}},
+            ]
+        }
+    } else {
+        if (req.body.shapes.length > 0 && req.body.colors.length > 0) {
+            filter = [
+                {'items': {"$elemMatch": {'nodeName': {$all: req.body.shapes}}}},
+                {'items': {"$elemMatch": {'style.fill': {$all: req.body.colors}}}},
+            ]
+        } else if (req.body.shapes.length > 0 && req.body.colors.length === 0) {
+            filter = [
+                {'items': {"$elemMatch": {'nodeName': {$all: req.body.shapes}}}},
+            ]
+        } else {
+            filter = [
+                {'items': {"$elemMatch": {'style.fill': {$all: req.body.colors}}}},
+            ]
+        }
+    }
+
     Layer.find({
-        $or: [
-            {'items': {"$elemMatch": {'nodeName': {$in: req.body.shapes}}}},
-            {'items': {"$elemMatch": {'style.fill': {$in: req.body.colors}}}},
-        ]
+        $and: filter
     }, (err, layers) => {
         if (err) {
             console.log(err);
@@ -44,6 +77,34 @@ layerRoutes.route('/find').post(function (req, res) {
         }
     });
 });
+
+// Filter OR
+layerRoutes.route('/find-or').post(function (req, res) {
+        let filter
+        if (req.body.shapes_num > 0) {
+            filter = [
+                {'items': {"$elemMatch": {'nodeName': {$in: req.body.shapes}}}},
+                {'items': {$size: req.body.shapes_num}},
+                {'items': {"$elemMatch": {'style.fill': {$in: req.body.colors}}}},
+            ]
+        } else {
+            filter = [
+                {'items': {"$elemMatch": {'nodeName': {$in: req.body.shapes}}}},
+                {'items': {"$elemMatch": {'style.fill': {$in: req.body.colors}}}},
+            ]
+        }
+        Layer.find({
+            $or: filter
+        }, (err, layers) => {
+            if (err) {
+                console.log(err);
+            }
+            else {
+                res.json(layers);
+            }
+        });
+    }
+);
 
 layerRoutes.route('/').get(function (req, res) {
     Layer.find(function (err, items) {
