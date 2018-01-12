@@ -34,34 +34,34 @@ layerRoutes.route('/find').post(function (req, res) {
     if (req.body.shapes_num > 0) {
         if (req.body.shapes.length > 0 && req.body.colors.length > 0) {
             filter = [
-                {'items': {"$elemMatch": {'nodeName': {$all: req.body.shapes}}}},
+                {'items.nodeName': {$all: req.body.shapes}},
                 {'items': {$size: req.body.shapes_num}},
-                {'items': {"$elemMatch": {'style.fill': {$all: req.body.colors}}}},
+                {'items.style.fill': {$all: req.body.colors}},
             ]
         } else if (req.body.shapes.length > 0 && req.body.colors.length === 0) {
             filter = [
-                {'items': {"$elemMatch": {'nodeName': {$all: req.body.shapes}}}},
+                {'items.nodeName': {$all: req.body.shapes}},
                 {'items': {$size: req.body.shapes_num}},
             ]
         } else {
             filter = [
-                {'items': {"$elemMatch": {'style.fill': {$all: req.body.colors}}}},
+                {'items.style.fill': {$all: req.body.colors}},
                 {'items': {$size: req.body.shapes_num}},
             ]
         }
     } else {
         if (req.body.shapes.length > 0 && req.body.colors.length > 0) {
             filter = [
-                {'items': {"$elemMatch": {'nodeName': {$all: req.body.shapes}}}},
-                {'items': {"$elemMatch": {'style.fill': {$all: req.body.colors}}}},
+                {'items.nodeName': {$all: req.body.shapes}},
+                {'items.style.fill': {$all: req.body.colors}},
             ]
         } else if (req.body.shapes.length > 0 && req.body.colors.length === 0) {
             filter = [
-                {'items': {"$elemMatch": {'nodeName': {$all: req.body.shapes}}}},
+                {'items.nodeName': {$all: req.body.shapes}},
             ]
         } else {
             filter = [
-                {'items': {"$elemMatch": {'style.fill': {$all: req.body.colors}}}},
+                {'items.style.fill': {$all: req.body.colors}},
             ]
         }
     }
