@@ -1,6 +1,6 @@
 # SvgManager
 
-> Svg to json with filters
+> Json to SVG with filters
 
 ## Build Setup
 
